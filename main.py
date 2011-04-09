@@ -1,25 +1,36 @@
 #!/usr/bin/python3
 import getopt,sys
-from PlayingEngine import *
-
+from MyPlayingEngines import *
+from random import *
 def usage():
     print("-r")
 
 def main():
-    #playingEngine = ABCPlayingEngine()
+    if (len(sys.argv) == 2 and sys.argv[1] == "realistic"):
+        playingEngine = GetRealisticPlayer(PositionType.X)
+    elif (len(sys.argv) == 2 and sys.argv[1] == "simple"):
+        playingEngine = GetSimplePlayer(PositionType.X)
+    else:
+        playingEngine = GetBestPlayer(PositionType.X)
+        
     myBoard = Board();
-    
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "::r", ["help", "output="])
-    except getopt.GetoptError as err:
-        # print help information and exit:
-        print("invalid usage", err) # will print something like "option -a not recognized"
-        usage()
-        sys.exit(2)
-    for o, a in opts:
-        if o == "-r":
-            verbose = True
-            print("using realistic opponent")
+
+    turnCount = randint(0,1);
+    print("Playing against " + playingEngine.PlayingEngineDescription())
+    print(myBoard)
+    while (myBoard.IsComplete() == False):
+        if (turnCount % 2 == 0):
+            print("X'S Turn\n")
+            myBoard.MarkMove(playingEngine.GetMove(myBoard))
+        else:
+            print("O's Turn\n")
+            name = input("Enter Your Move. Separate by a comma. I.E: 1,2\n")
+            OPosition = str.split(name, ",")
+            myBoard.MarkMove(Board.Move(Board.Position(int(OPosition[0]), int(OPosition[1])), PositionType.O))
+        print(myBoard)                               
+        turnCount = turnCount + 1
+        
+    print(myBoard.IsComplete())
 
 if __name__ == "__main__":
     main();
